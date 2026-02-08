@@ -733,6 +733,24 @@ body::after {
 - Hamburger menu for mobile navigation
 - Reduce animation intensity on mobile (use `prefers-reduced-motion`)
 
+### ⚠️ Mobile False Floors (CRITICAL)
+
+A "false floor" is when a section has so much vertical padding or a `min-h-screen` that the user sees only whitespace at the bottom of their viewport and thinks the page ended. **This kills scroll rate.**
+
+**Rules:**
+- **NEVER use `min-h-screen` on mobile for hero sections.** Use `min-h-[70vh] md:min-h-screen` instead.
+- **All section padding must be responsive:** `py-12 md:py-24` not just `py-24`
+- **Reduce section gaps on mobile:** `mb-10 md:mb-16` not just `mb-16`
+- **Test by scrolling on a phone viewport (375px wide)** — if any section fills the entire screen with whitespace below the content, fix it.
+- **Section transitions/dividers:** keep to `60px` max on mobile, not `120px`
+
+### Stats/Metrics Rows
+
+When displaying 3 stats in a row (e.g., "40 Years | 121+ Reviews | 100% Licensed"):
+- **Use `grid grid-cols-3`** — NOT `flex flex-wrap` (which breaks the 3rd to a new line on small screens)
+- Scale font sizes down on mobile: `text-2xl sm:text-4xl md:text-5xl`
+- Add dividers between stats with left borders for visual separation
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -795,6 +813,32 @@ Before delivering the final HTML file, verify:
 - [ ] Page weight < 500KB without images
 - [ ] Background has atmosphere (grid, dots, glow, gradient, or texture — not flat solid)
 - [ ] At least 2 decorative detail types used (numbers, dots, lines, brackets, grain)
+- [ ] **No false floors on mobile** — no section fills viewport with whitespace (see Responsive Rules)
+- [ ] **All cards have icons** — no blank icon squares; verify every card has a working Iconify icon
+- [ ] **No placeholder content** — no "Write your caption here", no empty image boxes, no Lorem ipsum
+- [ ] **Image areas have real content** — use Unsplash URLs, CSS-generated visuals, or gradients with overlays. Never ship a blank rectangle.
+- [ ] **Stats rows stay in one line** — use `grid grid-cols-N` not flex-wrap for fixed-count stat displays
 - [ ] **If light theme**: borders use `rgba(0,0,0,0.06-0.12)`, not white-based; buttons are dark on light; text hierarchy uses weight/opacity, not just color
 - [ ] **If both themes**: toggle button works; system preference detected on first load; no flash of wrong theme (script in `<head>`)
 - [ ] **If mixed theme**: dark-to-light transition is smooth (gradient or hard section break with border)
+
+---
+
+## Lessons from Production Builds
+
+### Canvas Background Animations
+Adding a `<canvas>` element behind the hero with subtle particle/firefly animations dramatically increases perceived quality. Keep particles brand-colored, low count on mobile (25 vs 50), and always respect `prefers-reduced-motion`. Good themes: fireflies for nature, geometric particles for tech, floating orbs for premium.
+
+### Multi-Site Showcase Pattern
+When building multiple mockups for prospects in the same industry:
+- **Each site MUST have a unique design direction** — different color palette, different theme (dark/light/mixed), different font pairing. Cookie-cutter kills the pitch.
+- Use an index page with industry headings and cards linking to each mockup
+- Simple client-side password gate (SHA-256 hash check + sessionStorage) keeps casual visitors out
+- Structure: one folder per prospect, each self-contained with `index.html`, `brand.md`, and `images/`
+
+### Brand Extraction Before Building
+Always extract real content from the prospect's existing site before building:
+- Actual phone numbers, service lists, business history
+- Real Google reviews for testimonials
+- Document their current site's failures in `brand.md` — this is pitch ammo
+- Use Unsplash for hero/section imagery when the prospect doesn't have usable photos
